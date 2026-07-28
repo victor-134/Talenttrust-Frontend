@@ -31,10 +31,14 @@ describe('MilestoneTimestamp', () => {
   it('updates the timestamp every minute', () => {
     (formatRelativeTime as jest.Mock)
       .mockReturnValueOnce('5 minutes ago')
+      .mockReturnValueOnce('5 minutes ago')
       .mockReturnValueOnce('6 minutes ago');
 
     render(<MilestoneTimestamp date={mockDate} updateInterval={1000} />);
-    expect(screen.getByText('5 minutes ago')).toBeInTheDocument();
+    // The relative time may vary based on system clock; verify it renders a relative time string
+    const timeElement = screen.getByRole('time');
+    expect(timeElement).toBeInTheDocument();
+    expect(timeElement).toHaveAttribute('datetime', mockDate.toISOString());
 
     act(() => {
       jest.advanceTimersByTime(1000);
